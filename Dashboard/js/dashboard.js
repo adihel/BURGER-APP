@@ -218,6 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderizarProductos();
     renderizarPedidos();
     renderizarClientes();
+    cargarSelectClientes();
 
     // Capturar el formulario usando el ID correcto de tu HTML: "formulario-cliente"
     let formCliente = document.getElementById("formulario-cliente");
@@ -331,5 +332,38 @@ function cargarSelectClientes() {
         selectCliente.innerHTML += `
             <option value="${cli.id}">${cli.nombre} - ${cli.email}</option>
         `;
+    });
+}
+let formPedido = document.getElementById("formulario-pedido");
+if (formPedido) {
+    formPedido.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        let clienteId = document.getElementById("id_cliente").value;
+        let metodoPago = document.getElementById("metodo_pago").value;
+        let descuento = parseFloat(document.getElementById("descuento").value) || 0;
+        let aumento = parseFloat(document.getElementById("aumento").value) || 0;
+
+        if (!clienteId || clienteId === "Seleccionar Cliente") {
+            alert("⚠️ Por favor selecciona un cliente para el pedido.");
+            return;
+        }
+
+        let nuevoPedido = {
+            id: Date.now(),
+            clienteId: clienteId,
+            metodoPago: metodoPago,
+            descuento: descuento,
+            aumento: aumento,
+            estado: "Pendiente",
+            fecha: new Date().toLocaleDateString()
+        };
+
+        let pedidos = JSON.parse(localStorage.getItem("dash-pedidos")) || [];
+        pedidos.push(nuevoPedido);
+        localStorage.setItem("dash-pedidos", JSON.stringify(pedidos));
+
+        alert("✅ ¡Pedido creado exitosamente!");
+        window.location.href = "listado-pedidos.html";
     });
 }
